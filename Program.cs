@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace UC3
+namespace UC6
 {
     class Contact
     {
@@ -23,45 +23,7 @@ namespace UC3
         public void AddContact(Contact contact)
         {
             contacts.Add(contact);
-        }
-
-        public void EditContact(string firstName, string lastName)
-        {
-            Contact contact = FindContact(firstName, lastName);
-            if (contact != null)
-            {
-                Console.WriteLine($"Editing contact: {contact.FirstName} {contact.LastName}");
-                Console.Write("Enter new Address: ");
-                contact.Address = Console.ReadLine();
-
-                Console.Write("Enter new City: ");
-                contact.City = Console.ReadLine();
-
-                Console.Write("Enter new State: ");
-                contact.State = Console.ReadLine();
-
-                Console.Write("Enter new Zip: ");
-                contact.Zip = Console.ReadLine();
-
-                Console.Write("Enter new Phone Number: ");
-                contact.PhoneNumber = Console.ReadLine();
-
-                Console.Write("Enter new Email: ");
-                contact.Email = Console.ReadLine();
-
-                Console.WriteLine("Contact edited successfully.");
-            }
-            else
-            {
-                Console.WriteLine("Contact not found.");
-            }
-        }
-
-        private Contact FindContact(string firstName, string lastName)
-        {
-            return contacts.Find(contact =>
-                contact.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase) &&
-                contact.LastName.Equals(lastName, StringComparison.OrdinalIgnoreCase));
+            Console.WriteLine("Contact added successfully.");
         }
 
         public void DisplayContacts()
@@ -78,25 +40,90 @@ namespace UC3
         }
     }
 
+    class AddressBookSystem
+    {
+        private Dictionary<string, AddressBook> addressBooks = new Dictionary<string, AddressBook>();
+
+        public void AddAddressBook(string name)
+        {
+            addressBooks[name] = new AddressBook();
+            Console.WriteLine($"Address Book '{name}' added.");
+        }
+
+        public void AddContactToAddressBook(string name, Contact contact)
+        {
+            if (addressBooks.TryGetValue(name, out AddressBook addressBook))
+            {
+                addressBook.AddContact(contact);
+            }
+            else
+            {
+                Console.WriteLine($"Address Book '{name}' not found.");
+            }
+        }
+
+        public void DisplayAddressBookContacts(string name)
+        {
+            if (addressBooks.TryGetValue(name, out AddressBook addressBook))
+            {
+                addressBook.DisplayContacts();
+            }
+            else
+            {
+                Console.WriteLine($"Address Book '{name}' not found.");
+            }
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            AddressBook addressBook = new AddressBook();
+            AddressBookSystem addressBookSystem = new AddressBookSystem();
 
-            // Adding some contacts (you can add more contacts here)
+            Console.WriteLine("Welcome to Address Book System");
 
-            Console.WriteLine("Welcome to Address Book");
+            bool continueOperating = true;
+            while (continueOperating)
+            {
+                Console.WriteLine("1. Add Address Book");
+                Console.WriteLine("2. Add Contact to Address Book");
+                Console.WriteLine("3. Display Address Book Contacts");
+                Console.WriteLine("4. Exit");
+                Console.Write("Enter your choice: ");
+                int choice = int.Parse(Console.ReadLine());
 
-            Console.Write("Enter the first name of the contact to edit: ");
-            string editFirstName = Console.ReadLine();
+                switch (choice)
+                {
+                    case 1:
+                        Console.Write("Enter Address Book Name: ");
+                        string addressBookName = Console.ReadLine();
+                        addressBookSystem.AddAddressBook(addressBookName);
+                        break;
 
-            Console.Write("Enter the last name of the contact to edit: ");
-            string editLastName = Console.ReadLine();
+                    case 2:
+                        Console.Write("Enter Address Book Name: ");
+                        string bookName = Console.ReadLine();
+                        Contact newContact = ReadContactFromConsole();
+                        addressBookSystem.AddContactToAddressBook(bookName, newContact);
+                        break;
 
-            addressBook.EditContact(editFirstName, editLastName);
+                    case 3:
+                        Console.Write("Enter Address Book Name: ");
+                        string displayBookName = Console.ReadLine();
+                        addressBookSystem.DisplayAddressBookContacts(displayBookName);
+                        break;
 
-            addressBook.DisplayContacts();
+                    case 4:
+                        continueOperating = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice. Please select again.");
+                        break;
+                }
+            }
         }
+
     }
 }
